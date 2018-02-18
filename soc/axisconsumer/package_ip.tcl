@@ -28,9 +28,9 @@ set_property top $design [get_filesets sources_1]
 
 # Synthesize
 
-set_property top $design [current_fileset]
-launch_runs synth_1 -jobs 6
-wait_on_run synth_1
+#set_property top $design [current_fileset]
+#launch_runs synth_1 -jobs 6
+#wait_on_run synth_1
 
 
 # Package
