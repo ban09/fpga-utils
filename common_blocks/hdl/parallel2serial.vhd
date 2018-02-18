@@ -20,12 +20,12 @@ begin
     shift : process (clk,rst_n) is
     begin
         if rst_n = '0' then
-            data <= (others => '0');
+            data <= (others => '1');
         elsif rising_edge(clk) then
             if load = '1' then
                 data <= din;
             elsif ce = '1' then
-                data <= '0' & data(INPUT_WIDTH-1 downto 1);
+                data <= '1' & data(INPUT_WIDTH-1 downto 1);
             end if;
         end if;
     end process shift;
