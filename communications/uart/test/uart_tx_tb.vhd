@@ -18,8 +18,9 @@ architecture test of uart_tx_tb is
     signal dout : std_logic;
 
 
-    type test_vector_t is array (0 to 3) of std_logic_vector(INPUT_WIDTH-1 downto 0);
-    signal test_vector : test_vector_t := (x"FF", x"00", x"AA", "EE");
+    type test_vector_t is array (0 to 3) of std_logic_vector(7 downto 0);
+    signal test_vector : test_vector_t := (x"FF", x"00", x"AA", x"EE");
+    signal enable : std_logic := '0';
 
     signal start_sim, stop_sim : std_logic := '0';
 begin
@@ -45,7 +46,7 @@ begin
                 rst_n => rst_n,
                 ce => ce,
                 load => load,
-                ready => load,
+                ready => ready,
                 din => din,
                 dout => dout); 
 
@@ -55,39 +56,40 @@ begin
     begin
         if start_sim = '1' and stop_sim = '0' then
             wait until clk = '1';
-            load <= '0';
             if ready = '1' then
-                if i < 4 then
-                    din <= test_vector(i);
-                    i := i+1;
+                while i < 4 loop
                     load <= '1';
-                else
-                    i := 0;
-                    stop_sim <= '1';
-                end if;
+                    din <= test_vector(i);
+                    i := i + 1;
+                    wait until clk = '1';
+                    load <= '0';
+                    wait until ready = '1';
+                    wait until clk = '1';
+                end loop;
+                stop_sim <= '1';
             else
                 wait until clk = '1';
             end if;
-        end process producer;
+        else
+            wait until clk = '1';
+        end if;
+    end process producer;
 
-        -- Consumer
-        consumer : process is 
-            variable i : integer := 0;
-        begin
-            wait until clk = '1';
-        end process consumer;
+-- Consumer
+    consumer : process is 
+    begin
+        wait until clk = '1';
+    end process consumer;
 
-        -- Clock enable generation:
-        process is
-        begin
-            enable <= '0';
-            wait until clk = '1';
-            wait until clk = '1';
-            wait until clk = '1';
-            enable <= '1';
-            wait until clk = '1';
-            wait until clk = '1';
-            wait until clk = '1';
-        end process;
-        ce <= enable and (not ready);
+-- Clock enable generation:
+    process is
+    begin
+        enable <= '0';
+        wait until clk = '1';
+        wait until clk = '1';
+        wait until clk = '1';
+        enable <= '1';
+        wait until clk = '1';
+    end process;
+    ce <= enable and (not ready);
 end architecture test; 

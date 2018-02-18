@@ -10,17 +10,18 @@ entity uart_tx is
             rst_n : in std_logic;
             ce : in std_logic;
             load : in std_logic;
-            ready : in std_logic;
+            ready : out std_logic;
             din : in std_logic_vector(7 downto 0);
             dout : out std_logic);
 end entity uart_tx;
 
 architecture rtl of uart_tx is
     signal tx_counter : unsigned(3 downto 0) := (others => '0');
+    constant TX_THR : unsigned(3 downto 0) := to_unsigned(9,tx_counter'length);
     signal tx_done : std_logic := '0';
 begin
 
-    shiftreg : entity work.serial2parallel
+    shiftreg : entity work.parallel2serial
     generic map(
                    INPUT_WIDTH => 10)
     port map(
@@ -34,15 +35,15 @@ begin
     tx_count : process(clk, rst_n) is
     begin
         if rst_n = '0' then
-            tx_count <= (others => '0');
+            tx_counter <= (others => '0');
             tx_done <= '0';
         elsif rising_edge(clk) then
-            tx_done <= '1';
+            tx_done <= '0';
             if load = '1' then
-                tx_count <= (others => '0');
+                tx_counter <= (others => '0');
             elsif ce = '1' then
-                if tx_count < TX_THR then
-                    tx_count <= tx_count + 1;
+                if tx_counter < TX_THR then
+                    tx_counter <= tx_counter + 1;
                 else
                     tx_done <= '1';
                 end if;
@@ -53,7 +54,7 @@ begin
     ready_gen : process(clk, rst_n) is
     begin
         if rst_n = '0' then
-            ready <= '0';
+            ready <= '1';
         elsif rising_edge(clk) then
             if load = '1' then
                 ready <= '0';
