@@ -29,7 +29,16 @@ begin
             end if;
         end if;
     end process shift;
-    dout <= data(0);
+
+    process (clk, rst_n) is
+    begin
+        if rst_n = '0' then
+            dout <= '1';
+        elsif ce = '1' then
+            dout <= data(0);
+        end if;
+    end process;
+            
 end architecture rtl;
 
 
