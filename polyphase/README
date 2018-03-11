@@ -1,0 +1,5 @@
+Polyphase FIR filter implementation to perform downconversion in an efficient manner.
+
+References:
+    [1] https://www.xilinx.com/support/documentation/user_guides/ug073.pdf
+
