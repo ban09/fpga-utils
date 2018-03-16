@@ -1,0 +1,1 @@
+Miscellaneous functions susceptible to be used from within various projects. They should probably be compiled into a library.
