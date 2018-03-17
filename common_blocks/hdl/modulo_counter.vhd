@@ -13,14 +13,14 @@ entity modulo_counter is
             rst_n : in std_logic;
             ce : in std_logic;
             thr : out std_logic;
-            Q : out std_logic_vector(clog2(THRESHOLD)-1 downto 0)
+            Q : out std_logic_vector(clog2(THRESHOLD) downto 0)
         );
 end entity modulo_counter;
 
 
 architecture rtl of modulo_counter is
 
-    signal count : unsigned(clog2(THRESHOLD)-1 downto 0);
+    signal count : unsigned(clog2(THRESHOLD) downto 0);
 
 begin
 
