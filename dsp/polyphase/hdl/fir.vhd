@@ -28,7 +28,7 @@ architecture impl of fir is
     signal acc : acc_t(STAGES-1 downto 0) := (others => (others => '0'));
 
     signal coeff_idx : integer := 0;
-    signal coeff_idx_map : std_logic_vector(clog2(TAPS-1)-1 downto 0);
+    signal coeff_idx_map : std_logic_vector(clog2(TAPS-1) downto 0);
 
     signal din_q : std_logic_vector(DATA_WIDTH-1 downto 0) := (others => '0');
     signal din_valid : std_logic := '0';
@@ -38,6 +38,16 @@ architecture impl of fir is
 
     signal out_acc : signed(ACC_WIDTH-1 downto 0) := (others => '0');
     signal acc_rst, acc_rst_q : std_logic := '0';
+
+    -- TODO: Can signed be used painlessly?
+    type coeff_t is array(natural range <>, natural range <>) of integer; -- range (MIN_COEFF to MAX_COEFF);
+    constant coeff : coeff_t(0 to STAGES-1, 0 to TAPS-1) := 
+    ( (1286, 4121, 0),
+      (0,    4121, 1286),
+      (-95,  5759, -95)
+  );
+    type coeff_row_t is array(natural range <>) of integer;
+    signal coeff_q : coeff_row_t(STAGES-1 downto 0) := (others => 0);
 
     attribute use_dsp : string;
     attribute use_dsp of mul : signal is "yes";
@@ -112,7 +122,8 @@ begin
                 if rising_edge(clk) then
                     if din_valid = '1' then
                         mul_data_in(i) <= resize(signed(din_q),MULT_A_WIDTH);
-                        mul(i) <= mul_data_in(i) * to_signed(coeff(i,coeff_idx),MULT_B_WIDTH);
+                        coeff_q(i) <= coeff(coeff_idx,i);
+                        mul(i) <= mul_data_in(i) * to_signed(coeff_q(i),MULT_B_WIDTH);
                         acc(i) <= resize(mul(i),ACC_WIDTH);
                     end if;
                 end if;
@@ -125,7 +136,8 @@ begin
                 if rising_edge(clk) then
                     if din_valid = '1' then
                         mul_data_in(i) <= resize(signed(data(i-1)),MULT_A_WIDTH);
-                        mul(i) <= mul_data_in(i) * to_signed(coeff(i,coeff_idx),MULT_B_WIDTH);
+                        coeff_q(i) <= coeff(coeff_idx,i);
+                        mul(i) <= mul_data_in(i) * to_signed(coeff_q(i),MULT_B_WIDTH);
                         acc(i) <= acc(i-1) + resize(mul(i),ACC_WIDTH);
                     end if;
                 end if;
@@ -134,7 +146,7 @@ begin
 
     end generate filter_stages;
 
-    acc_rst <= '1' when coeff_idx = 1 else '0';
+    acc_rst <= '1' when coeff_idx = 2 else '0';
 
     process (clk) is
     begin

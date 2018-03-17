@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
-#include <assert.h>
 
 #define STAGES (3)
 #define TAPS (3)
@@ -18,10 +17,15 @@
 // {6, -20, 61, -156, 465, 1462, -253, 98, -36, 10},
 // {3, -11, 35, -91, 259, 1571, -181, 69, -26, 7},
 // {1, -3, 11, -28, 78, 1627, -69, 26, -10, 3}};
+//int coeff_tmp[STAGES][TAPS] = {
+//    {1286, 4121, -95},
+//    {0, 5759, 0},
+//    {-95, 4121, 1286}};
+//
 int coeff_tmp[STAGES][TAPS] = {
-    {1286, 4121, -95},
-    {0, 5759, 0},
-    {-95, 4121, 1286}};
+    {1286, 4121, 0},
+    {0, 4121, 1286},
+    {-95, 5759, -95}};
 
 int main(){
     int8_t din = 0;
@@ -68,7 +72,8 @@ int main(){
                 /* Probably the efficient way to address the adressing problem in 
                  * hardware is to rearrange the coefficients to account for 
                  * the pipeline.*/
-                mul_tmp[i] = mul_in[i]*coeff_tmp[((((idx-(STAGES+1)*i)%TAPS)+TAPS)%TAPS)][i];
+//                mul_tmp[i] = mul_in[i]*coeff_tmp[((((idx-(STAGES+1)*i)%TAPS)+TAPS)%TAPS)][i];
+                mul_tmp[i] = mul_in[i]*coeff_tmp[idx][i];
                 if (i == 0){
                     add_tmp[i] = mul[i]; 
                 }
