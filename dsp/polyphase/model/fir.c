@@ -2,13 +2,15 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "fir_config.h"
+
 #define COEFF_SCALING (14) 
 
 /* NOTE it may not work if NCOEFFS/DECIMATING_FACTOR is not an integer */
-#define DECIMATING_FACTOR (3)
-#define NCOEFFS (9)
+//#define DECIMATING_FACTOR (3)
+//#define NCOEFFS (9)
 
-int COEFFS[NCOEFFS] =  {-95,0,1286,4121,5759,4121,1286,0,-95};
+//int COEFFS[NCOEFFS] =  {-95,0,1286,4121,5759,4121,1286,0,-95};
 //int COEFFS[NCOEFFS] = {1, 3, 6, 8, 10, 11, 12, 10, 7, 3, -3, 
 //    -11, -20, -28, -36, -40, -41, -36, -26, -10, 11, 35, 61,
 //    85, 104, 114, 113, 98, 69, 26, -28, -91, -156, -216, -263,
@@ -35,7 +37,7 @@ int main(void){
         if ( ((i+1)%DECIMATING_FACTOR)==0 ){
             acc=0;
             for(int j = 0; j<NCOEFFS; j++){
-                acc+=samples[j]*COEFFS[j];
+                acc+=samples[j]*fir_coeffs[j];
             }
 #ifndef ROUND 
             res = (int8_t)(acc>>COEFF_SCALING);

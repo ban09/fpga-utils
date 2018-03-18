@@ -2,8 +2,10 @@
 #include <stdint.h>
 #include <string.h>
 
-#define STAGES (3)
-#define TAPS (3)
+#include "fir_config.h"
+
+//#define STAGES (3)
+//#define TAPS (3)
 
 /* TODO: Check coefficient distribution in the non-symmetric case */
 //int coeff_tmp[STAGES][TAPS] = {
@@ -22,10 +24,10 @@
 //    {0, 5759, 0},
 //    {-95, 4121, 1286}};
 //
-int coeff_tmp[STAGES][TAPS] = {
-    {1286, 4121, 0},
-    {0, 4121, 1286},
-    {-95, 5759, -95}};
+//int coeff_tmp[STAGES][TAPS] = {
+//    {1286, 4121, 0},
+//    {0, 4121, 1286},
+//    {-95, 5759, -95}};
 
 int main(){
     int8_t din = 0;
@@ -72,8 +74,8 @@ int main(){
                 /* Probably the efficient way to address the adressing problem in 
                  * hardware is to rearrange the coefficients to account for 
                  * the pipeline.*/
-//                mul_tmp[i] = mul_in[i]*coeff_tmp[((((idx-(STAGES+1)*i)%TAPS)+TAPS)%TAPS)][i];
-                mul_tmp[i] = mul_in[i]*coeff_tmp[idx][i];
+                mul_tmp[i] = mul_in[i]*poly_coeffs[((((idx-(STAGES+1)*i)%TAPS)+TAPS)%TAPS)][i];
+//                mul_tmp[i] = mul_in[i]*poly_coeffs[idx][i];
                 if (i == 0){
                     add_tmp[i] = mul[i]; 
                 }
@@ -106,7 +108,6 @@ int main(){
             if(++idx > TAPS-1){
                 idx = 0;
             }
-            memcpy(coeff,coeff_tmp[idx],STAGES*sizeof(int));
             memcpy(mul,mul_tmp,STAGES*sizeof(int));
             memcpy(add,add_tmp,STAGES*sizeof(int));
             out_acc = out_acc_tmp;
