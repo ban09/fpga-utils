@@ -4,7 +4,7 @@ from scipy import signal
 import io
 import utils.utils as utils
 
-length = int((90000/3)*9)
+length = int((90000/4)*9)
 x1 = np.fromfile("out_poly","int8",length);
 x2 = np.fromfile("out_fir","int8",length);
 #x3 = np.fromfile("out_fpga","int8",length);

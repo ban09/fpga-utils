@@ -5,8 +5,8 @@ import io
 
 fs = 90e6
 fc = 1.023e6
-taps = 9
-dec = 3
+taps = 16
+dec = 4
 scaling = 2**14
 
 b = signal.firwin(taps,fc/(fs/2))
@@ -26,7 +26,7 @@ with open('fir_config.h','w') as f:
     f.write('#define DECIMATING_FACTOR ({0})\n'.format(dec))
     f.write('#define TAPS (NCOEFFS/DECIMATING_FACTOR)\n')
     f.write('#define STAGES DECIMATING_FACTOR \n')
-    f.write('int fir_coeffs[TAPS] = {')
+    f.write('int fir_coeffs[NCOEFFS] = {')
     i = 0;
     for coeff in np.nditer(bs):
         if (i%10)==0:

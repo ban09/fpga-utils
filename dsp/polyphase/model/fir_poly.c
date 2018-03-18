@@ -75,7 +75,7 @@ int main(){
                  * hardware is to rearrange the coefficients to account for 
                  * the pipeline.*/
                 mul_tmp[i] = mul_in[i]*poly_coeffs[((((idx-(STAGES+1)*i)%TAPS)+TAPS)%TAPS)][i];
-//                mul_tmp[i] = mul_in[i]*poly_coeffs[idx][i];
+                //mul_tmp[i] = mul_in[i]*poly_coeffs[idx][i];
                 if (i == 0){
                     add_tmp[i] = mul[i]; 
                 }
